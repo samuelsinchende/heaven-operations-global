@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heaven Operations Global</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:         #1A4F8A;
+    --blue-mid:     #2563B0;
+    --blue-light:   #4A90D9;
+    --blue-pale:    #E8F1FB;
+    --blue-dark:    #0D2F57;
+    --accent:       #60A5FA;
+    --ink:          #0D1B2E;
+    --ink-soft:     #2B3D56;
+    --bg:           #F4F7FB;
+    --bg-dark:      #E5EDF8;
+    --spirit:       #6B21A8;
+    --spirit-light: #F3E8FF;
+    --relation:     #065F46;
+    --relation-light:#D1FAE5;
+    --wealth:       #92400E;
+    --wealth-light: #FEF3C7;
+    --text-muted:   #647A99;
+    --border:       rgba(26,79,138,0.18);
+    --shadow-hover: 0 10px 40px rgba(13,27,46,0.18);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; }
+
+  /* NAV */
+  nav { background:var(--blue-dark); padding:0 2rem; position:sticky; top:0; z-index:100; border-bottom:1px solid rgba(96,165,250,0.2); }
+  .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:66px; }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:600; color:#fff; cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:0.6rem; }
+  .logo-icon { width:34px; height:34px; background:var(--blue-mid); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; border:1px solid rgba(96,165,250,0.3); }
+  .logo em { color:var(--accent); font-style:normal; }
+  .nav-links { display:flex; gap:0.15rem; align-items:center; }
+  .nav-btn { background:none; border:none; color:rgba(255,255,255,0.6); font-family:'DM Sans',sans-serif; font-size:0.78rem; letter-spacing:0.07em; text-transform:uppercase; cursor:pointer; padding:0.45rem 0.8rem; border-radius:5px; transition:all 0.2s; }
+  .nav-btn:hover { background:rgba(96,165,250,0.12); color:var(--accent); }
+  .nav-btn.active { background:rgba(96,165,250,0.15); color:var(--accent); }
+  .upload-btn { background:var(--blue-light) !important; color:#fff !important; border-radius:5px; padding:0.45rem 1rem !important; font-weight:500 !important; margin-left:0.5rem; }
+  .upload-btn:hover { background:var(--accent) !important; }
+
+  /* PAGES */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* HERO */
+  .hero { background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue) 60%,var(--blue-mid) 100%); padding:5.5rem 2rem 4.5rem; text-align:center; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 70% at 50% 100%,rgba(96,165,250,0.18) 0%,transparent 70%); }
+  .hero-globe { font-size:3.5rem; line-height:1; margin-bottom:1.25rem; position:relative; }
+  .hero h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2.2rem,5.5vw,3.8rem); font-weight:300; color:#fff; line-height:1.1; position:relative; margin-bottom:0.5rem; }
+  .hero h1 strong { font-weight:600; color:var(--accent); }
+  .hero-tagline { color:rgba(255,255,255,0.55); font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; position:relative; margin-bottom:1.75rem; }
+  .hero-divider { width:50px; height:2px; background:var(--accent); margin:1.25rem auto 1.5rem; border-radius:2px; opacity:0.7; }
+  .hero-stats { display:flex; justify-content:center; gap:3rem; position:relative; flex-wrap:wrap; }
+  .hero-stat-num { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:600; color:#fff; line-height:1; }
+  .hero-stat-label { font-size:0.72rem; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.08em; margin-top:0.2rem; }
+
+  /* CATEGORY BAR */
+  .category-bar { background:#fff; border-bottom:1px solid var(--border); position:sticky; top:66px; z-index:90; }
+  .category-inner { max-width:1200px; margin:0 auto; display:flex; padding:0 2rem; overflow-x:auto; scrollbar-width:none; }
+  .cat-tab { background:none; border:none; font-family:'DM Sans',sans-serif; font-size:0.8rem; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; padding:1rem 1.1rem; border-bottom:2px solid transparent; color:var(--text-muted); transition:all 0.2s; white-space:nowrap; display:flex; align-items:center; gap:0.45rem; }
+  .cat-tab:hover { color:var(--ink); }
+  .cat-tab.active-all { border-bottom-color:var(--blue-mid); color:var(--blue-mid); }
+  .cat-tab.active-spirit { border-bottom-color:var(--spirit); color:var(--spirit); }
+  .cat-tab.active-relation { border-bottom-color:var(--relation); color:var(--relation); }
+  .cat-tab.active-wealth { border-bottom-color:var(--wealth); color:var(--wealth); }
+  .cat-dot { width:7px; height:7px; border-radius:50%; display:inline-block; }
+  .dot-spirit { background:var(--spirit); } .dot-relation { background:var(--relation); } .dot-wealth { background:var(--wealth); }
+
+  /* TYPE FILTER */
+  .type-bar { max-width:1200px; margin:0 auto; padding:1.5rem 2rem 0.5rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; }
+  .type-label { font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-right:0.25rem; }
+  .type-btn { background:none; border:1px solid var(--border); border-radius:20px; padding:0.28rem 0.85rem; font-size:0.78rem; cursor:pointer; font-family:'DM Sans',sans-serif; color:var(--text-muted); transition:all 0.2s; }
+  .type-btn:hover { border-color:var(--blue-light); color:var(--ink); }
+  .type-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; font-weight:500; }
+
+  /* MAIN / GRID */
+  .main { max-width:1200px; margin:0 auto; padding:1.25rem 2rem 4rem; }
+  .section-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-bottom:1.25rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.4rem; }
+  .card { background:#fff; border:1px solid rgba(26,79,138,0.09); border-radius:10px; overflow:hidden; cursor:pointer; transition:transform 0.22s,box-shadow 0.22s; display:flex; flex-direction:column; }
+  .card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
+  .card-thumb { height:155px; display:flex; align-items:center; justify-content:center; font-size:2.8rem; position:relative; }
+  .thumb-spirit { background:var(--spirit-light); } .thumb-relation { background:var(--relation-light); } .thumb-wealth { background:var(--wealth-light); }
+  .card-cat-badge { position:absolute; top:10px; left:10px; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.07em; padding:0.22rem 0.55rem; border-radius:20px; font-weight:500; }
+  .badge-spirit { background:var(--spirit); color:#fff; } .badge-relation { background:var(--relation); color:#fff; } .badge-wealth { background:var(--wealth); color:#fff; }
+  .type-icon { position:absolute; top:10px; right:10px; background:rgba(13,27,46,0.55); color:#fff; font-size:0.62rem; padding:0.22rem 0.48rem; border-radius:4px; letter-spacing:0.05em; text-transform:uppercase; }
+  .featured-badge { position:absolute; bottom:10px; right:10px; background:var(--accent); color:var(--ink); font-size:0.6rem; padding:0.2rem 0.45rem; border-radius:4px; font-weight:500; letter-spacing:0.05em; }
+  .card-body { padding:1rem 1.1rem 0.6rem; flex:1; display:flex; flex-direction:column; gap:0.35rem; }
+  .card-title { font-family:'Cormorant Garamond',serif; font-size:1.13rem; font-weight:600; color:var(--ink); line-height:1.3; }
+  .card-author { font-size:0.77rem; color:var(--text-muted); }
+  .card-desc { font-size:0.81rem; color:var(--ink-soft); line-height:1.5; margin-top:0.2rem; flex:1; }
+  .card-footer { padding:0.6rem 1.1rem 0.85rem; display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(26,79,138,0.07); }
+  .star-row { display:flex; align-items:center; gap:4px; font-size:0.77rem; color:#92600A; }
+  .stars { color:#F59E0B; font-size:0.82rem; }
+  .card-meta { font-size:0.72rem; color:var(--text-muted); display:flex; gap:0.7rem; }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(13,27,46,0.65); z-index:200; align-items:flex-start; justify-content:center; padding:2rem 1rem; overflow-y:auto; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--bg); border-radius:14px; max-width:700px; width:100%; overflow:hidden; margin:auto; position:relative; box-shadow:0 24px 60px rgba(13,27,46,0.25); }
+  .modal-header { display:flex; align-items:flex-start; gap:1.25rem; padding:1.75rem 1.75rem 1.25rem; background:#fff; border-bottom:1px solid var(--border); }
+  .modal-thumb { width:80px; height:80px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; flex-shrink:0; }
+  .modal-title { font-family:'Cormorant Garamond',serif; font-size:1.65rem; font-weight:600; color:var(--ink); line-height:1.2; }
+  .modal-sub { font-size:0.82rem; color:var(--text-muted); margin-top:0.3rem; }
+  .modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--text-muted); padding:0.25rem; }
+  .modal-body { padding:1.5rem 1.75rem; }
+  .modal-desc { font-size:0.9rem; line-height:1.75; color:var(--ink-soft); margin-bottom:1.5rem; }
+  .modal-actions { display:flex; gap:0.7rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+  .btn-primary { background:var(--blue); color:#fff; border:none; border-radius:7px; padding:0.6rem 1.25rem; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; cursor:pointer; transition:background 0.2s; }
+  .btn-primary:hover { background:var(--blue-mid); }
+  .btn-sec { background:none; border:1px solid var(--border); border-radius:7px; padding:0.6rem 1.1rem; font-family:'DM Sans',sans-serif; font-size:0.85rem; cursor:pointer; color:var(--ink); display:flex; align-items:center; gap:0.4rem; transition:background 0.2s; }
+  .btn-sec:hover { background:var(--bg-dark); }
+  .btn-sec.liked { color:#e74c3c; border-color:#e74c3c; }
+  .rating-section { border-top:1px solid var(--border); padding-top:1.25rem; margin-top:0.25rem; }
+  .rating-title { font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:0.7rem; }
+  .star-rate { display:flex; gap:6px; margin-bottom:0.75rem; }
+  .star-rate button { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#ddd; transition:color 0.15s; padding:0; line-height:1; }
+  .star-rate button.lit { color:#F59E0B; }
+  .comments-section { border-top:1px solid var(--border); padding-top:1.25rem; margin-top:1.25rem; }
+  .comment-input-row { display:flex; gap:0.6rem; margin-bottom:1.1rem; }
+  .comment-input { flex:1; border:1px solid var(--border); border-radius:7px; padding:0.6rem 0.9rem; font-family:'DM Sans',sans-serif; font-size:0.85rem; background:#fff; resize:none; height:42px; transition:border-color 0.2s,height 0.2s; }
+  .comment-input:focus { outline:none; border-color:var(--blue-light); height:80px; }
+  .comment-submit { background:var(--blue); border:none; border-radius:7px; padding:0 1rem; cursor:pointer; font-size:0.85rem; font-family:'DM Sans',sans-serif; font-weight:500; color:#fff; align-self:flex-start; height:42px; }
+  .comment-submit:hover { background:var(--blue-mid); }
+  .comment-list { display:flex; flex-direction:column; gap:0.85rem; }
+  .comment { background:#fff; border-radius:7px; padding:0.8rem 1rem; border:1px solid rgba(26,79,138,0.08); }
+  .comment-name { font-size:0.82rem; font-weight:500; color:var(--ink); margin-bottom:0.2rem; }
+  .comment-text { font-size:0.82rem; color:var(--ink-soft); line-height:1.55; }
+  .comment-time { font-size:0.7rem; color:var(--text-muted); margin-top:0.2rem; }
+
+  /* UPLOAD FORM */
+  .upload-form { display:flex; flex-direction:column; gap:1rem; }
+  .form-row { display:flex; flex-direction:column; gap:0.3rem; }
+  .form-label { font-size:0.76rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); }
+  .form-input,.form-select,.form-textarea { border:1px solid var(--border); border-radius:7px; padding:0.6rem 0.9rem; font-family:'DM Sans',sans-serif; font-size:0.87rem; background:#fff; color:var(--ink); }
+  .form-textarea { height:80px; resize:vertical; }
+  .form-input:focus,.form-select:focus,.form-textarea:focus { outline:none; border-color:var(--blue-light); }
+  .upload-area { border:2px dashed var(--border); border-radius:10px; padding:2rem; text-align:center; cursor:pointer; background:var(--blue-pale); transition:border-color 0.2s; }
+  .upload-area:hover { border-color:var(--blue-light); }
+  .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+  /* ABOUT */
+  .about-hero { background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue) 70%,var(--blue-mid) 100%); padding:5rem 2rem 4rem; text-align:center; position:relative; overflow:hidden; }
+  .about-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 60% at 50% 100%,rgba(96,165,250,0.15) 0%,transparent 70%); }
+  .about-hero h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:300; color:#fff; position:relative; margin-bottom:0.6rem; }
+  .about-hero h1 strong { font-weight:600; color:var(--accent); }
+  .about-hero p { color:rgba(255,255,255,0.55); font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase; position:relative; }
+  .about-body { max-width:900px; margin:0 auto; padding:3.5rem 2rem 5rem; }
+  .about-intro { font-family:'Cormorant Garamond',serif; font-size:1.45rem; font-weight:300; color:var(--ink); line-height:1.65; margin-bottom:2.5rem; padding-bottom:2.5rem; border-bottom:1px solid var(--border); }
+  .about-intro em { color:var(--blue-mid); font-style:italic; }
+  .about-section { margin-bottom:3rem; }
+  .about-section h2 { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:600; color:var(--ink); margin-bottom:0.9rem; }
+  .about-section p { font-size:0.92rem; line-height:1.8; color:var(--ink-soft); margin-bottom:0.9rem; }
+  .pillars-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.25rem; margin-top:1.5rem; }
+  .pillar-card { background:#fff; border-radius:12px; padding:1.5rem 1.25rem; border:1px solid var(--border); text-align:center; transition:transform 0.2s,box-shadow 0.2s; }
+  .pillar-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+  .pillar-icon { font-size:2.2rem; margin-bottom:0.75rem; }
+  .pillar-title { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:600; color:var(--ink); margin-bottom:0.4rem; }
+  .pillar-desc { font-size:0.82rem; color:var(--text-muted); line-height:1.55; }
+  .pillar-spirit { border-top:3px solid var(--spirit); } .pillar-relation { border-top:3px solid var(--relation); } .pillar-wealth { border-top:3px solid var(--wealth); }
+  .about-values { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-top:1.5rem; }
+  .value-item { background:var(--blue-pale); border-radius:10px; padding:1.1rem; border-left:3px solid var(--blue-mid); }
+  .value-item h3 { font-size:0.88rem; font-weight:500; color:var(--blue); margin-bottom:0.3rem; }
+  .value-item p { font-size:0.8rem; color:var(--ink-soft); line-height:1.5; }
+  .team-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:1.25rem; margin-top:1.5rem; }
+  .team-card { background:#fff; border-radius:12px; padding:1.5rem 1rem; border:1px solid var(--border); text-align:center; }
+  .team-avatar { width:60px; height:60px; border-radius:50%; background:var(--blue-pale); border:2px solid var(--blue-mid); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:600; color:var(--blue); margin:0 auto 0.75rem; }
+  .team-name { font-size:0.9rem; font-weight:500; color:var(--ink); margin-bottom:0.2rem; }
+  .team-role { font-size:0.78rem; color:var(--text-muted); }
+  .about-cta { background:linear-gradient(135deg,var(--blue-dark),var(--blue)); border-radius:14px; padding:3rem 2rem; text-align:center; color:#fff; margin-top:3rem; }
+  .about-cta h2 { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; margin-bottom:0.6rem; }
+  .about-cta h2 strong { color:var(--accent); font-weight:600; }
+  .about-cta p { color:rgba(255,255,255,0.6); font-size:0.85rem; margin-bottom:1.5rem; }
+  .about-cta-btn { background:var(--accent); color:var(--ink); border:none; border-radius:8px; padding:0.75rem 2rem; font-family:'DM Sans',sans-serif; font-weight:500; font-size:0.9rem; cursor:pointer; }
+  .about-cta-btn:hover { background:#93C5FD; }
+
+  /* LOADING */
+  .loading { text-align:center; padding:3rem; color:var(--text-muted); font-size:0.9rem; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:2rem; right:2rem; background:var(--blue-dark); color:#fff; padding:0.75rem 1.25rem; border-radius:8px; font-size:0.85rem; z-index:999; opacity:0; transform:translateY(10px); transition:all 0.3s; border-left:3px solid var(--accent); }
+  .toast.show { opacity:1; transform:translateY(0); }
+
+  .empty { text-align:center; padding:3rem; color:var(--text-muted); font-size:0.9rem; }
+  .meta-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; max-width:1200px; margin:0.75rem auto 1rem; padding:0 2rem; }
+  .results-count { font-size:0.78rem; color:var(--text-muted); }
+  .sort-select { border:1px solid var(--border); border-radius:5px; padding:0.25rem 0.5rem; font-size:0.78rem; background:#fff; color:var(--ink); cursor:pointer; }
+
+  @media(max-width:600px){
+    .hero,.about-hero{padding:3.5rem 1.25rem 3rem;}
+    .main,.about-body{padding-left:1rem;padding-right:1rem;}
+    .form-row-2{grid-template-columns:1fr;}
+    .nav-links .nav-btn:not(.upload-btn):not(:last-of-type){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#" onclick="showPage('home')">
+      <span class="logo-icon">✦</span>
+      <span>Heaven Operations <em>Global</em></span>
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn active" id="nav-home" onclick="showPage('home')">Home</button>
+      <button class="nav-btn" id="nav-about" onclick="showPage('about')">About Us</button>
+      <button class="nav-btn upload-btn" onclick="openUpload()">+ Publish</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-globe">🌍</div>
+    <h1>Heaven Operations <strong>Global</strong></h1>
+    <div class="hero-divider"></div>
+    <div class="hero-tagline" id="hero-tagline">Books · Modules · Audio Sermons</div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="stat-materials">—</div>
+        <div class="hero-stat-label">Materials</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">3</div>
+        <div class="hero-stat-label">Categories</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="stat-likes">—</div>
+        <div class="hero-stat-label">Total Likes</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="category-bar">
+    <div class="category-inner">
+      <button class="cat-tab active-all" onclick="filterCat('all')" id="tab-all">All Materials</button>
+      <button class="cat-tab" onclick="filterCat('spirituality')" id="tab-spirituality"><span class="cat-dot dot-spirit"></span> Spirituality</button>
+      <button class="cat-tab" onclick="filterCat('relationships')" id="tab-relationships"><span class="cat-dot dot-relation"></span> Relationships</button>
+      <button class="cat-tab" onclick="filterCat('wealth')" id="tab-wealth"><span class="cat-dot dot-wealth"></span> Wealth & Business</button>
+    </div>
+  </div>
+
+  <div class="type-bar">
+    <span class="type-label">Type:</span>
+    <button class="type-btn active" onclick="filterType('all')" id="type-all">All</button>
+    <button class="type-btn" onclick="filterType('book')" id="type-book">📖 Books</button>
+    <button class="type-btn" onclick="filterType('module')" id="type-module">📋 Modules</button>
+    <button class="type-btn" onclick="filterType('audio')" id="type-audio">🎙 Audio Sermons</button>
+  </div>
+
+  <div class="meta-row">
+    <div class="results-count" id="results-count"></div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <span style="font-size:0.74rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;">Sort:</span>
+      <select class="sort-select" onchange="sortMaterials(this.value)">
+        <option value="recent">Most Recent</option>
+        <option value="rated">Highest Rated</option>
+        <option value="liked">Most Liked</option>
+        <option value="az">A – Z</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="section-label" id="section-label">Recently Published</div>
+    <div id="loading" class="loading">Loading materials…</div>
+    <div class="grid" id="grid" style="display:none;"></div>
+    <div class="empty" id="empty-state" style="display:none;">No materials found.</div>
+  </div>
+</div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="page-about">
+  <div class="about-hero">
+    <h1>About <strong>Heaven Operations Global</strong></h1>
+    <div style="width:50px;height:2px;background:var(--accent);margin:1.25rem auto;border-radius:2px;opacity:0.7;"></div>
+    <p id="about-hero-tagline">Transforming Lives · Empowering Nations · Glorifying God</p>
+  </div>
+  <div class="about-body">
+    <p class="about-intro" id="about-intro">Loading…</p>
+
+    <div class="about-section">
+      <h2 id="mission-heading">Our Mission</h2>
+      <p id="mission-p1"></p>
+      <p id="mission-p2"></p>
+    </div>
+
+    <div class="about-section">
+      <h2>Our Three Pillars</h2>
+      <p>Every piece of content we publish is rooted in one of three foundational pillars essential to holistic kingdom living.</p>
+      <div class="pillars-grid">
+        <div class="pillar-card pillar-spirit"><div class="pillar-icon">🕊</div><div class="pillar-title">Spirituality</div><div class="pillar-desc">Deepening your walk with God through prayer, the Word, and Spirit-led living.</div></div>
+        <div class="pillar-card pillar-relation"><div class="pillar-icon">🤝</div><div class="pillar-title">Relationships</div><div class="pillar-desc">Building healthy marriages, families, and communities on biblical covenant.</div></div>
+        <div class="pillar-card pillar-wealth"><div class="pillar-icon">💼</div><div class="pillar-title">Wealth & Business</div><div class="pillar-desc">Equipping kingdom entrepreneurs to create and deploy wealth for God's glory.</div></div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <h2>What We Believe</h2>
+      <div class="about-values" id="about-values">Loading…</div>
+    </div>
+
+    <div class="about-section">
+      <h2>Our Team</h2>
+      <div class="team-grid" id="team-grid">Loading…</div>
+    </div>
+
+    <div class="about-cta">
+      <h2>Ready to <strong>Contribute?</strong></h2>
+      <p>Publish your book, module, or sermon and reach believers across the globe.</p>
+      <button class="about-cta-btn" onclick="openUpload()">+ Publish a Material</button>
+    </div>
+  </div>
+</div>
+
+<!-- MATERIAL MODAL -->
+<div class="modal-overlay" id="mat-modal" onclick="closeIfOverlay(event,'mat-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('mat-modal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-thumb" id="m-thumb"></div>
+      <div><div class="modal-title" id="m-title"></div><div class="modal-sub" id="m-sub"></div></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-desc" id="m-desc"></div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="accessMaterial()">Access Material</button>
+        <button class="btn-sec" id="m-like-btn" onclick="toggleLike()">♡ Like</button>
+        <button class="btn-sec" onclick="shareMaterial()">↗ Share</button>
+      </div>
+      <div class="rating-section">
+        <div class="rating-title">Rate this material</div>
+        <div class="star-rate" id="star-rate-row">
+          <button onclick="setRating(1)">★</button><button onclick="setRating(2)">★</button>
+          <button onclick="setRating(3)">★</button><button onclick="setRating(4)">★</button><button onclick="setRating(5)">★</button>
+        </div>
+        <div id="rating-result" style="font-size:0.78rem;color:var(--text-muted);"></div>
+      </div>
+      <div class="comments-section">
+        <div class="rating-title">Comments</div>
+        <div class="comment-input-row">
+          <textarea class="comment-input" id="comment-input" placeholder="Share your thoughts…"></textarea>
+          <button class="comment-submit" onclick="submitComment()">Post</button>
+        </div>
+        <div class="comment-list" id="comment-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="upload-modal" onclick="closeIfOverlay(event,'upload-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('upload-modal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-thumb" style="background:var(--blue-pale);font-size:2rem;">📤</div>
+      <div><div class="modal-title">Publish a Material</div><div class="modal-sub">Share your books, modules or audio sermons</div></div>
+    </div>
+    <div class="modal-body">
+      <div class="upload-form">
+        <div class="form-row"><label class="form-label">Title *</label><input class="form-input" id="f-title" placeholder="Enter title…"></div>
+        <div class="form-row"><label class="form-label">Author / Speaker *</label><input class="form-input" id="f-author" placeholder="Your name"></div>
+        <div class="form-row-2">
+          <div class="form-row"><label class="form-label">Category *</label>
+            <select class="form-select" id="f-cat"><option value="">Select…</option><option value="spirituality">Spirituality</option><option value="relationships">Relationships</option><option value="wealth">Wealth & Business</option></select>
+          </div>
+          <div class="form-row"><label class="form-label">Type *</label>
+            <select class="form-select" id="f-type"><option value="">Select…</option><option value="book">Book</option><option value="module">Module</option><option value="audio">Audio Sermon</option></select>
+          </div>
+        </div>
+        <div class="form-row"><label class="form-label">Description</label><textarea class="form-textarea" id="f-desc" placeholder="Brief summary…"></textarea></div>
+        <div class="form-row"><label class="form-label">Access Link (Google Drive, Dropbox, etc.)</label><input class="form-input" id="f-link" placeholder="https://…"></div>
+        <div class="upload-area" onclick="showToast('File upload: use the CMS dashboard at /admin for permanent uploads.')">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">☁️</div>
+          <div style="font-size:0.85rem;font-weight:500;color:var(--ink-soft);">Click to upload file</div>
+          <div style="font-size:0.78rem;color:var(--text-muted);">PDF, MP3, MP4 · use /admin for permanent storage</div>
+        </div>
+        <button class="btn-primary" style="width:100%;padding:0.75rem;font-size:0.9rem;" onclick="publishMaterial()">Publish Material</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const EMOJIS    = { book:'📖', module:'📋', audio:'🎙' };
+const THUMB_CLS = { spirituality:'thumb-spirit', relationships:'thumb-relation', wealth:'thumb-wealth' };
+const BADGE_CLS = { spirituality:'badge-spirit', relationships:'badge-relation', wealth:'badge-wealth' };
+const CAT_LABELS= { spirituality:'Spirituality', relationships:'Relationships', wealth:'Wealth & Business' };
+
+let materials = [], runtimeMaterials = [];
+let activeCat = 'all', activeType = 'all', sortMode = 'recent';
+let currentMat = null;
+
+/* ── Load all content JSON files ── */
+async function loadContent() {
+  try {
+    // Load materials list
+    const matFiles = [
+      'walking-in-divine-purpose','marriage-a-sacred-covenant','kingdom-finances',
+      'healing-the-broken-heart','the-spirit-led-life','entrepreneurship-and-faith'
+    ];
+    const matResults = await Promise.allSettled(
+      matFiles.map(f => fetch(`content/materials/${f}.json`).then(r => r.json()))
+    );
+    materials = matResults
+      .filter(r => r.status === 'fulfilled')
+      .map((r, i) => ({
+        ...r.value,
+        id: i + 1,
+        likes: Math.floor(Math.random() * 150) + 10,
+        liked: false,
+        rating: (4.2 + Math.random() * 0.7).toFixed(1) * 1,
+        ratingCount: Math.floor(Math.random() * 100) + 15,
+        comments: [],
+        date: new Date(r.value.date).getTime()
+      }));
+    runtimeMaterials = materials;
+    updateStats();
+    renderGrid();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('grid').style.display = 'grid';
+  } catch(e) {
+    document.getElementById('loading').textContent = 'Could not load materials.';
+  }
+
+  // Load about content
+  try {
+    const about = await fetch('content/settings/about.json').then(r => r.json());
+    document.getElementById('about-intro').textContent = about.intro;
+    document.getElementById('mission-heading').textContent = about.mission.heading;
+    document.getElementById('mission-p1').textContent = about.mission.p1;
+    document.getElementById('mission-p2').textContent = about.mission.p2;
+    if (about.values) {
+      document.getElementById('about-values').innerHTML = about.values.map(v =>
+        `<div class="value-item"><h3>${v.title}</h3><p>${v.desc}</p></div>`
+      ).join('');
+    }
+  } catch(e) {}
+
+  // Load team
+  try {
+    const teamFiles = ['apostle-paul','dr-ruth-banda','bishop-james','sister-linda'];
+    const teamResults = await Promise.allSettled(
+      teamFiles.map(f => fetch(`content/team/${f}.json`).then(r => r.json()))
+    );
+    const team = teamResults
+      .filter(r => r.status === 'fulfilled')
+      .map(r => r.value)
+      .sort((a,b) => (a.order||99) - (b.order||99));
+    document.getElementById('team-grid').innerHTML = team.map(t =>
+      `<div class="team-card">
+        <div class="team-avatar">${t.initials}</div>
+        <div class="team-name">${t.name}</div>
+        <div class="team-role">${t.role}</div>
+      </div>`
+    ).join('');
+  } catch(e) {}
+}
+
+function updateStats() {
+  document.getElementById('stat-materials').textContent = runtimeMaterials.length;
+  document.getElementById('stat-likes').textContent = runtimeMaterials.reduce((s,m)=>s+m.likes,0);
+}
+
+function renderGrid() {
+  let list = [...runtimeMaterials];
+  if (activeCat !== 'all') list = list.filter(m => m.category === activeCat);
+  if (activeType !== 'all') list = list.filter(m => m.type === activeType);
+  if (sortMode === 'recent') list.sort((a,b) => b.date - a.date);
+  else if (sortMode === 'rated') list.sort((a,b) => b.rating - a.rating);
+  else if (sortMode === 'liked') list.sort((a,b) => b.likes - a.likes);
+  else list.sort((a,b) => a.title.localeCompare(b.title));
+
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty-state');
+  const count = document.getElementById('results-count');
+  const label = document.getElementById('section-label');
+
+  count.textContent = list.length + ' material' + (list.length!==1?'s':'') + ' found';
+  label.textContent = sortMode==='recent'?'Recently Published':sortMode==='rated'?'Highest Rated':sortMode==='liked'?'Most Liked':'All Materials';
+
+  if (!list.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  grid.innerHTML = list.map(m => `
+    <div class="card" onclick="openMaterial(${m.id})">
+      <div class="card-thumb ${THUMB_CLS[m.category]}">
+        ${EMOJIS[m.type]}
+        <span class="card-cat-badge ${BADGE_CLS[m.category]}">${CAT_LABELS[m.category]}</span>
+        <span class="type-icon">${m.type.toUpperCase()}</span>
+        ${m.featured ? '<span class="featured-badge">Featured</span>' : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-title">${m.title}</div>
+        <div class="card-author">${m.author}</div>
+        <div class="card-desc">${m.description.slice(0,105)}…</div>
+      </div>
+      <div class="card-footer">
+        <div class="star-row"><span class="stars">★</span> ${(+m.rating).toFixed(1)} <span style="color:var(--text-muted);">(${m.ratingCount})</span></div>
+        <div class="card-meta"><span>♡ ${m.likes}</span><span>💬 ${m.comments.length}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function filterCat(cat) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.className = 'cat-tab');
+  const map = { all:'active-all', spirituality:'active-spirit', relationships:'active-relation', wealth:'active-wealth' };
+  const el = document.getElementById('tab-'+(cat==='all'?'all':cat));
+  if(el) el.classList.add(map[cat]);
+  renderGrid();
+}
+
+function filterType(t) {
+  activeType = t;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('type-'+t); if(el) el.classList.add('active');
+  renderGrid();
+}
+
+function sortMaterials(v) { sortMode=v; renderGrid(); }
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn[id^="nav-"]').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-'+name); if(nb) nb.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function openMaterial(id) {
+  currentMat = runtimeMaterials.find(m => m.id===id);
+  if(!currentMat) return;
+  const m = currentMat;
+  document.getElementById('m-thumb').className = 'modal-thumb '+THUMB_CLS[m.category];
+  document.getElementById('m-thumb').textContent = EMOJIS[m.type];
+  document.getElementById('m-title').textContent = m.title;
+  document.getElementById('m-sub').innerHTML = `<strong>${m.author}</strong> · ${CAT_LABELS[m.category]} · ${m.type.toUpperCase()}`;
+  document.getElementById('m-desc').textContent = m.description;
+  const lb = document.getElementById('m-like-btn');
+  lb.textContent = (m.liked?'♥':'♡')+' '+(m.liked?'Liked':'Like')+' ('+m.likes+')';
+  lb.className = 'btn-sec'+(m.liked?' liked':'');
+  updateStars(0);
+  document.getElementById('rating-result').textContent = `Average: ★ ${(+m.rating).toFixed(1)} from ${m.ratingCount} ratings`;
+  renderComments();
+  document.getElementById('comment-input').value='';
+  document.getElementById('mat-modal').classList.add('open');
+}
+
+function renderComments() {
+  const cl = document.getElementById('comment-list');
+  if(!currentMat.comments.length) { cl.innerHTML='<div style="font-size:0.82rem;color:var(--text-muted);">No comments yet. Be the first!</div>'; return; }
+  cl.innerHTML = currentMat.comments.map(c =>
+    `<div class="comment"><div class="comment-name">${c.name}</div><div class="comment-text">${c.text}</div><div class="comment-time">${c.time}</div></div>`
+  ).join('');
+}
+
+function toggleLike() {
+  if(!currentMat) return;
+  currentMat.liked = !currentMat.liked;
+  currentMat.likes += currentMat.liked?1:-1;
+  const lb = document.getElementById('m-like-btn');
+  lb.textContent=(currentMat.liked?'♥':'♡')+' '+(currentMat.liked?'Liked':'Like')+' ('+currentMat.likes+')';
+  lb.className='btn-sec'+(currentMat.liked?' liked':'');
+  renderGrid(); updateStats();
+}
+
+function setRating(n) {
+  updateStars(n);
+  const m=currentMat, total=m.rating*m.ratingCount+n; m.ratingCount++;
+  m.rating = Math.round((total/m.ratingCount)*10)/10;
+  document.getElementById('rating-result').textContent=`Thank you! New average: ★ ${m.rating.toFixed(1)} from ${m.ratingCount} ratings`;
+  renderGrid();
+}
+
+function updateStars(n) {
+  document.querySelectorAll('#star-rate-row button').forEach((b,i) => b.className=i<n?'lit':'');
+}
+
+function submitComment() {
+  const input=document.getElementById('comment-input'), text=input.value.trim();
+  if(!text) return;
+  currentMat.comments.unshift({name:'You', text, time:'Just now'});
+  input.value=''; renderComments(); renderGrid();
+  showToast('Comment posted!');
+}
+
+function accessMaterial() {
+  if(currentMat.link && currentMat.link!=='#' && currentMat.link!=='') window.open(currentMat.link,'_blank');
+  else showToast('No access link set for this material yet.');
+}
+
+function shareMaterial() { showToast('Link copied to clipboard!'); }
+function openUpload() { document.getElementById('upload-modal').classList.add('open'); }
+
+function publishMaterial() {
+  const t=document.getElementById('f-title').value.trim();
+  const a=document.getElementById('f-author').value.trim();
+  const c=document.getElementById('f-cat').value;
+  const tp=document.getElementById('f-type').value;
+  const d=document.getElementById('f-desc').value.trim();
+  const l=document.getElementById('f-link').value.trim();
+  if(!t||!a||!c||!tp){showToast('Please fill in all required fields.');return;}
+  const newMat={id:runtimeMaterials.length+100, title:t, author:a, category:c, type:tp, description:d||'No description provided.', link:l||'', likes:0, liked:false, rating:0, ratingCount:0, comments:[], featured:false, date:Date.now()};
+  runtimeMaterials.unshift(newMat);
+  closeModal('upload-modal');
+  ['f-title','f-author','f-cat','f-type','f-desc','f-link'].forEach(id=>document.getElementById(id).value='');
+  activeCat='all'; activeType='all'; sortMode='recent';
+  filterCat('all'); filterType('all'); updateStats();
+  showToast('✓ Published! Add it permanently via the CMS at /admin');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeIfOverlay(e,id){if(e.target.id===id)closeModal(id);}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+loadContent();
+</script>
+</body>
+</html>
